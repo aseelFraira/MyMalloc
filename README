@@ -1,0 +1,50 @@
+# Custom Memory Allocator
+
+This repository contains an implementation of a custom memory allocator with multiple versions of the `smalloc` function. The allocator simulates dynamic memory allocation (`malloc`, `calloc`, `free`, `realloc`) by managing memory blocks using `sbrk` and `mmap`. It also incorporates techniques such as buddy systems for block splitting and merging in the third implementation.
+
+## Features:
+- Custom memory management functions (`smalloc`, `scalloc`, `sfree`, `srealloc`).
+- Multiple `smalloc` implementations:
+  1. **Simple allocator** using `sbrk`.
+  2. **Linked list-based allocator** with metadata for managing allocated and free blocks.
+  3. **Buddy system allocator** using a more complex heap management strategy with block merging and splitting.
+
+## File Descriptions:
+
+### 1. **malloc_1.cpp**
+   - **Overview**: This is the simplest implementation of the custom memory allocator, using `sbrk` to allocate memory.
+   - **Key Points**:
+     - The `smalloc` function directly calls `sbrk` to allocate memory.
+     - There is no metadata management, so it allocates a raw memory block.
+     - It does not handle fragmentation or track free memory, leading to potential inefficiencies in memory use.
+
+### 2. **malloc_2.cpp**
+   - **Overview**: This version adds basic memory management by using a doubly linked list and metadata to track allocated and free blocks.
+   - **Key Points**:
+     - The allocator maintains metadata for each memory block (size, free status).
+     - The `smalloc` function attempts to reuse free blocks; if none are available, it calls `sbrk` to allocate new memory.
+     - It supports basic memory reuse and freeing but lacks advanced features like merging blocks.
+
+### 3. **malloc_3.cpp**
+   - **Overview**: This is the most advanced implementation, incorporating a buddy system for managing memory.
+   - **Key Points**:
+     - The buddy system allows memory blocks to be split into smaller blocks and merged back together when freed.
+     - It tracks free blocks and attempts to merge buddies when possible to minimize fragmentation.
+     - This implementation provides better memory management by dynamically adjusting the block sizes and reducing fragmentation.
+
+## Memory Management Functions:
+
+- **smalloc(size_t size)**: Allocates memory of the given size. It behaves differently depending on the implementation used (simple `sbrk` in the first version, linked list in the second, buddy system in the third).
+  
+- **scalloc(size_t num, size_t size)**: Allocates memory for an array of `num` elements, each of the specified `size`, and initializes the allocated memory to zero.
+
+- **sfree(void* ptr)**: Frees the memory block pointed to by `ptr`. The behavior varies based on the allocator used (linked list management or buddy system).
+
+- **srealloc(void* oldp, size_t size)**: Resizes the memory block pointed to by `oldp` to the new size. If the existing block is large enough, it is returned as is; otherwise, a new block is allocated, and the old data is copied.
+
+## Compilation
+
+To compile the allocator, run the following command:
+
+```bash
+g++ -o custom_allocator malloc_1.cpp   # or malloc_2.cpp / malloc_3.cpp
