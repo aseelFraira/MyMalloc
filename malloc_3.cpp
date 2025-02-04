@@ -477,7 +477,7 @@ void sfree(void *ptr)
 void *srealloc(void *oldp, size_t size)
 {
 
-    if (size <= 0 || size > MAX_BLOCK_SIZE)
+    if (size <= 0 || size > MAX_MEM)
     {
         return nullptr;
     }
